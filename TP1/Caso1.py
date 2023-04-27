@@ -7,7 +7,7 @@ def network():
     net = Mininet(topo=None, build=False, ipBase='192.168.100.0/24')
 
     info('Generate main router\n')
-    main_router = net.addHost('r0', ip='192.168.100.6/29')
+    main_router = net.addHost('r0', ip=None)
 
     info('Generate switches\n')
     s1, s2, s1b, s2b = [

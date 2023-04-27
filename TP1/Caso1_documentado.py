@@ -23,7 +23,7 @@ def network():
 
     # Agrega un host llamado r0 a la red, correspondiente al router matriz, y le asigna la dirección IP 192.168.100.6/29, que como dice la consigna, es la ultima direccion utilizable de al /29 propia.
     info('Generate main router\n')
-    main_router = net.addHost('r0', ip='192.168.100.6/29')
+    main_router = net.addHost('r0', ip=None)
 
     # Agrega cuatro switches llamados s1, s2, s1b y s2b a la red, correspondiente a los switches que van entre r0 y r1/r2, y entre r1/r2 y h1/h2 respectivamente
     info('Generate switches\n')
@@ -74,7 +74,8 @@ def network():
                 params2={'ip': '192.168.100.9/29'})
 
     # Agrega un enlace entre el enrutador r1 y el switch s1b y le asigna la dirección IP 10.0.1.254/24 (direccion del host 1)
-    # ? Aca la dinamica cambia, por logica, se pensaria que se conectan por medio de 10.0.1.1, pero no hace directamene con el host
+    #? Aca la dinamica cambia, por logica, se pensaria que se conectan por medio de 10.0.1.1, pero no hace directamene con el host
+    #? esto se debe a que la conexion se hace localmente y no entre distintas subredes. 
     net.addLink(r1, s1b, intfName1='r1-eth2', params1={'ip': '10.0.1.254/24'})
     # Agrega un enlace entre el enrutador r2 y el switch s2b y le asigna la dirección IP 10.0.2.254/24 (direccion del host 2)
     net.addLink(r2, s2b, intfName1='r2-eth2', params1={'ip': '10.0.2.254/24'})
