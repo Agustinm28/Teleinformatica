@@ -15,7 +15,7 @@ def gen_routers(net:Mininet, number:int):
     r = [[] for l in range(number)]
     first_assignable = 1
     for i in range(number):
-        if number <= 6:
+        if number <= 32:
             r[i] = net.addHost(f'r{i}', ip=f'192.168.100.{first_assignable}/29')
             r[i].cmd('sysctl -w net.ipv4.ip_forward=1')
             first_assignable += 8
@@ -40,12 +40,8 @@ def gen_hosts(net, number):
     info('*** Add hosts\n')
     h = [[] for H in range(number)]
     for i in range(number):
-        if number <= 253:
-            h[i] = net.addHost(f'h{i}', ip=f'10.0.{i+1}.1/24', defaultRoute=f'via 10.0.{i+1}.254')
-        else:
-            info('Max number of hosts reached\n')
-            break
-
+        h[i] = net.addHost(f'h{i}', ip=f'10.0.{i+1}.1/24', defaultRoute=f'via 10.0.{i+1}.254')
+        
     return h
 
 def gen_links(net:Mininet, number:int, rm, s_w, s_l, r, h):
@@ -128,7 +124,7 @@ def network(number):
         # Post configure switches and hosts
         post_configure(net, number, rm, r)
     except AttributeError:
-        print("No se pueden superar las 6 sucursales")
+        print("No se pueden superar las 32 sucursales")
         net.stop()
 
     CLI(net)
@@ -137,11 +133,10 @@ def network(number):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-n', type=int, default=6,
-                        help='Numero de sucursales')
+    parser.add_argument('-n', type=int, default=6, help='Numero de sucursales')
     args = parser.parse_args()
     setLogLevel('info')
-    if args.n <= 6:
+    if args.n <= 32:
         network(args.n)  
     else:
-        print('No se pueden superar las 6 sucursales')
+        print('No se pueden superar las 32 sucursales')
