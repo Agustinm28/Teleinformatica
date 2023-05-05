@@ -19,22 +19,26 @@ def network():
     r1 = net.addHost('r1', ip='192.168.100.1/29')
     r2 = net.addHost('r2', ip='192.168.100.9/29')
 
+    print(r1.params)
+
     info('Generate hosts\n')
     h1 = net.addHost('h1', ip='10.0.1.1/24', defaultRoute='via 10.0.1.254')
     h2 = net.addHost('h2', ip='10.0.2.1/24', defaultRoute='via 10.0.2.254')
 
+    print(h1.params)
+
     info('Generate links\n')
-    net.addLink(s1, main_router, intfName2='r0-eth1', params2={'ip': '192.168.100.6/29'})
-    net.addLink(s2, main_router, intfName2='r0-eth2', params2={'ip': '192.168.100.14/29'})
+    print(net.addLink(s1, main_router, intfName2='r0-eth1', params2={'ip': '192.168.100.6/29'}))
+    print(net.addLink(s2, main_router, intfName2='r0-eth2', params2={'ip': '192.168.100.14/29'}))
 
-    net.addLink(s1, r1, intfName1='s1-eth2', intfName2='r1-eth1', params2={'ip': '192.168.100.1/29'})
-    net.addLink(s2, r2, intfName1='s2-eth2', intfName2='r2-eth1', params2={'ip': '192.168.100.9/29'})
+    print(net.addLink(s1, r1, intfName1='s1-eth2', intfName2='r1-eth1', params2={'ip': '192.168.100.1/29'}))
+    print(net.addLink(s2, r2, intfName1='s2-eth2', intfName2='r2-eth1', params2={'ip': '192.168.100.9/29'}))
 
-    net.addLink(r1, s1b, intfName1='r1-eth2', params1={'ip': '10.0.1.254/24'})
-    net.addLink(r2, s2b, intfName1='r2-eth2', params1={'ip': '10.0.2.254/24'})
+    print(net.addLink(r1, s1b, intfName1='r1-eth2', params1={'ip': '10.0.1.254/24'}))
+    print(net.addLink(r2, s2b, intfName1='r2-eth2', params1={'ip': '10.0.2.254/24'}))
 
-    net.addLink(s1b, h1)
-    net.addLink(s2b, h2)
+    print(net.addLink(s1b, h1))
+    print(net.addLink(s2b, h2))
 
     info('*** Starting controllers\n')
     for controller in net.controllers:
