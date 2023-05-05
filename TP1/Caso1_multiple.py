@@ -2,7 +2,6 @@ from mininet.net import Mininet
 from mininet.log import setLogLevel, info
 from mininet.cli import CLI
 from mininet.node import OVSKernelSwitch
-from mininet.clean import cleanup
 import argparse
 
 def gen_routers(net:Mininet, number:int):
