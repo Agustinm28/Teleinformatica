@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metabase
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metabase
+  template:
+    metadata:
+      labels:
+        app: metabase
+    spec:
+      containers:
+      - name: metabase
+        image: metabase/metabase:latest
+        envFrom:
+          - secretRef:
+              name: metabase-secrets
+          - configMapRef:
+              name: metabase-config
+        ports:
+          - containerPort: 3000
+        volumeMounts:
+        - name: metabase-config
+          mountPath: /metabase-config
+        - name: metabase-secrets
+          mountPath: /metabase-secrets
+      volumes:
+      - name: metabase-config
+        configMap:
+          name: metabase-config
+      - name: metabase-secrets
+        secret:
+          secretName: metabase-secrets
