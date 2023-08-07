@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metabase-app
+  labels:
+    run: metabase-app
+spec:
+  selector:
+    matchLabels:
+      run: metabase-app
+  template:
+    metadata:
+      generateName: metabase-app
+      labels:
+        run: metabase-app
+    spec:
+      containers:
+        - name: metabase-app
+          image: metabase/metabase:v0.46.6.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MB_DB_TYPE
+              valueFrom:
+                  secretKeyRef:
+                    name: metabase-secret
+                    key: metabase-db-type
+            - name: MB_DB_DBNAME
+              valueFrom:
+                  secretKeyRef:
+                    name: metabase-secret
+                    key: metabase-db-name
+            - name: MB_DB_PORT
+              valueFrom:
+                  secretKeyRef:
+                    name: metabase-secret
+                    key: metabase-db-port
+            - name: MB_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: metabase-secret
+                  key: metabase-db-user
+            - name: MB_DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: metabase-secret
+                  key: metabase-db-pass
+            - name: MB_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: metabase-secret
+                  key: metabase-db-host
+                    #- name: MB_DB_CONNECTION_URI
+                    #valueFrom:
+                    #secretKeyRef:
+                    #name: metabase-secret
+                    #key: metabase-db-uri
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: metabase-secret
