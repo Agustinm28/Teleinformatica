@@ -15,7 +15,7 @@ def delete():
     subprocess.run(['kubectl','delete','service','metabase-service']) # service
     subprocess.run(['kubectl','delete','secret','metabase-secrets']) # secret
     subprocess.run(['kubectl','delete','configmap','metabase-config']) # configmap 
-    #subprocess.run(['kubectl','delete','ingress','metabase-ingress']) # ingress 
+    subprocess.run(['kubectl','delete','ingress','metabase-ingress']) # ingress 
 
 def restart():
     delete()

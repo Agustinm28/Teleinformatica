@@ -47,6 +47,8 @@ spec:
         - name: mysql-config
           mountPath: /etc/mysql/conf.d/my.cnf
           subPath: my.cnf
+        - name: mysql-volume
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: mysql-config
         configMap:
@@ -62,4 +64,12 @@ spec:
       storageClassName: longhorn
       resources:
         requests:
-          storage: 10Gi
+          storage: 2Gi
+  - metadata:
+      name: mysql-volume
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: longhorn
+      resources:
+        requests:
+          storage: 2Gi
