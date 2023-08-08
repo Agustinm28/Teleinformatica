@@ -1,9 +1,0 @@
-apiVersion: v1
-data:
-  schema.sql: |
-    CREATE DATABASE IF NOT EXISTS mobility;
-    USE mobility;
-kind: ConfigMap
-metadata:
-  creationTimestamp: null
-  name: mobility-load
