@@ -3,6 +3,8 @@ import argparse
 
 def delete():
 
+    print('Deleting...')
+
     # Borrar MySQL
     subprocess.run(['kubectl','delete','sts','metabase-db']) # sts
     subprocess.run(['kubectl','delete','pvc','mysql-data-metabase-db-0']) # pvc
@@ -17,16 +19,24 @@ def delete():
     subprocess.run(['kubectl','delete','configmap','metabase-config']) # configmap 
     subprocess.run(['kubectl','delete','ingress','metabase-ingress']) # ingress 
 
+def start():
+    print('Starting...')
+    subprocess.run(['kubectl','apply','-f','.'])
+
 def restart():
     delete()
-    subprocess.run(['kubectl','apply','-f','.'])
+    start()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Delete or restart Metabase and MySQL')
-    parser.add_argument('-delete', action='store_true', help='Delete Metabase and MySQL', default=delete)
+    parser.add_argument('-start', action='store_true', help='Start Metabase and MySQL')
+    parser.add_argument('-delete', action='store_true', help='Delete Metabase and MySQL')
     parser.add_argument('-restart', action='store_true', help='Restart Metabase and MySQL')
+    
     args = parser.parse_args()
     if args.restart:
         restart()
-    else:
+    elif args.delete:
         delete()
+    elif args.start:
+        start()

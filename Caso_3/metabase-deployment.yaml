@@ -18,19 +18,13 @@ spec:
         envFrom:
           - secretRef:
               name: metabase-secrets
-          - configMapRef:
-              name: metabase-config
         ports:
-          - containerPort: 3000
+          - name: metabase
+            containerPort: 3000
         volumeMounts:
-        - name: metabase-config
-          mountPath: /metabase-config
         - name: metabase-secrets
           mountPath: /metabase-secrets
       volumes:
-      - name: metabase-config
-        configMap:
-          name: metabase-config
       - name: metabase-secrets
         secret:
           secretName: metabase-secrets
