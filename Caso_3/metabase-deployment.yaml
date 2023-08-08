@@ -2,19 +2,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: metabase
+  labels:
+    run: metabase
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: metabase
+      run: metabase
   template:
     metadata:
+      generateName: metabase
       labels:
-        app: metabase
+        run: metabase
     spec:
       containers:
       - name: metabase
         image: metabase/metabase:latest
+        imagePullPolicy: Always
         envFrom:
           - secretRef:
               name: metabase-secrets
