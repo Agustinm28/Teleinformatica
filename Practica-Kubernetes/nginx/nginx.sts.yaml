@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  creationTimestamp: null
+  name: web
+  labels:
+    app: web
+
+spec:
+  serviceName: web
+
+  selector:
+    matchLabels:
+      app: web
+
+  replicas: 1
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web
+
+    spec:
+      containers:
+      - image: bitnami/nginx:1.24.0
+        name: nginx
+        resources: {}
+
+        ports:
+          - name: web
+            containerPort: 80
+        
+        volumeMounts:
+        #! Volumen de datos persistentes
+        - name: www
+          mountPath: /usr/share/nginx/html
+      
+        #! Volumen para carga configmap
+        - name: cm-vol
+          mountPath: /opt/bitnami/nginx/html
+      
+      #! Volumen para carga configmap
+      volumes:
+      - name: cm-vol
+        configMap:
+          name: web-assets
+        
+  volumeClaimTemplates:
+  #! Volumen de datos persistentes
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+
+status: 
+  replicas: 1

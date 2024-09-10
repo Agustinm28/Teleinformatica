@@ -1,0 +1,12 @@
+docker run -d --restart=always -p 3001:3001 -v uptime-kuma:/app/data --name uptime-kuma louislam/uptime-kuma:1
+
+Esto tenemos:
+- port
+- pvc
+- imge
+
+Necesitamos:
+- StatefulSet 
+- Service
+- Ingress
+- PVC

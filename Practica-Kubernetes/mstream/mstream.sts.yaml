@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mstream-service
+  labels:
+    app: mstream-service
+spec:
+  ports:
+  - port: 3000
+    name: mstream-port
+  #clusterIP: None
+  selector:
+    app: mstream-app
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mstream-app
+spec:
+  selector:
+    matchLabels:
+      app: mstream-app 
+  serviceName: "mstream-service"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mstream-app
+    spec:
+      initContainers:
+      - name: load-mp3
+        image: curlimages/curl:latest
+        command: ['sh', '-c']
+        args:
+          - >
+            curl -L 'https://drive.google.com/uc?export=download&id=18QKr-X1g1LVuLGw-xUBmCDdb4CwlmrW9' -o /music/song.mp3 &&
+            curl -L 'https://drive.google.com/uc?export=download&id=1JUIsuZgTwgz4RkKJpmLe1hRKwqokUA34' -o /music/song2.mp3
+        volumeMounts:
+        - name: music
+          mountPath: /music
+      containers:
+      - name: mstream-app
+        image: lscr.io/linuxserver/mstream:latest
+        env:
+        - name: PUID
+          valueFrom:
+            configMapKeyRef:
+              name: mstream-cm
+              key: PUID
+        - name: PGID
+          valueFrom:
+            configMapKeyRef:
+              name: mstream-cm
+              key: PGID
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: mstream-cm
+              key: TZ
+        ports:
+        - containerPort: 3000
+          name: mstream-port
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: music
+          mountPath: /music
+  volumeClaimTemplates:
+  - metadata:
+      name: config
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+  - metadata:
+      name: music
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi

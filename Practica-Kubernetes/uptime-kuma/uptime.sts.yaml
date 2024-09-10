@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: uptime-service
+  labels:
+    app: uptime-service
+spec:
+  ports:
+  - port: 3001
+    name: uptime-port
+  #clusterIP: None
+  selector:
+    app: uptime-app
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: uptime-app
+spec:
+  selector:
+    matchLabels:
+      app: uptime-app 
+  serviceName: "uptime-service"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: uptime-app
+    spec:
+      containers:
+      - name: uptime-app
+        image: louislam/uptime-kuma:1
+        ports:
+        - containerPort: 3001
+          name: uptime-port
+        volumeMounts:
+        - name: uptime-data
+          mountPath: /app/data
+  volumeClaimTemplates:
+  - metadata:
+      name: uptime-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      #storageClassName: "default"
+      resources:
+        requests:
+          storage: 1Gi

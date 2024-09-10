@@ -1,0 +1,90 @@
+## SERVICE EXAMPLE
+apiVersion: v1
+kind: Service         # Tipo de recurso a crear
+metadata:
+  name: nginx         # Nombre del Service
+  labels:
+    app: nginx        # Etiqueta para poder identificar y seleccionar al Service
+spec:
+  type: ClusterIP     # Indica que el Service no tiene una IP de clúster y actúa como un headless service, permitiendo la comunicación directa con los pods. Si se usa Ingress, quitar campo
+  ports:
+  - port: 80          # Puerto en el que el Service escucha
+    name: web         # Nombre descriptivo para el puerto 
+  selector:
+    app: nginx        # Pods asociados al Service
+---
+## STATEFULSET EXAMPLE
+apiVersion: apps/v1                     # Versión de la API de Kubernetes que se está utilizando.
+kind: StatefulSet                       # Tipo de recurso; StatefulSet es para aplicaciones con estado.
+metadata:
+  name: web                             # Nombre del StatefulSet.
+spec:
+  selector:
+    matchLabels:
+      app: nginx                        # Selector que identifica los pods gestionados por este StatefulSet usando etiquetas.
+  serviceName: "nginx"                  # Nombre del Service que gestiona la red entre los pods del StatefulSet.
+  replicas: 3                           # Número de réplicas (pods) que se desean en el StatefulSet.
+  minReadySeconds: 10                   # Tiempo mínimo (en segundos) que un pod debe estar listo antes de ser considerado disponible.
+  template:
+    metadata:
+      labels:
+        app: nginx                      # Etiquetas aplicadas a los pods creados por este StatefulSet.
+    spec:
+      terminationGracePeriodSeconds: 10 # Tiempo de gracia (en segundos) para finalizar un pod antes de forzar su terminación.
+      containers:
+      - name: nginx                     # Nombre del contenedor dentro de cada pod.
+        image: registry.k8s.io/nginx-slim:0.24  # Imagen del contenedor que se utilizará.
+        ports:
+        - containerPort: 80             # Puerto que el contenedor expondrá.
+          name: web                     # Nombre descriptivo para el puerto.
+        volumeMounts:
+        - name: www                     # Nombre del volumen a montar en el contenedor.
+          mountPath: /usr/share/nginx/html  # Ruta del sistema de archivos dentro del contenedor donde se montará el volumen.
+  volumeClaimTemplates:
+  - metadata:
+      name: www                         # Nombre del volumen que se utilizará para almacenar datos persistentes.
+    spec:
+      accessModes: [ "ReadWriteOnce" ]  # Modo de acceso del volumen, indica que solo un nodo puede montar el volumen en modo lectura/escritura.
+      storageClassName: "my-storage-class" # Clase de almacenamiento que define las propiedades del volumen. Dejar en blanco para default. Poner longhorn en Rancher UM.
+      resources:
+        requests:
+          storage: 1Gi                  # Cantidad de almacenamiento solicitada para cada volumen (1GiB en este caso). Tambien pueden ser Mi (Megabytes)
+---
+## INGRESS
+apiVersion: networking.k8s.io/v1               # Versión de la API de Kubernetes utilizada para Ingress.
+kind: Ingress                                  # Tipo de recurso; Ingress gestiona el acceso externo a los servicios dentro del clúster.
+metadata:
+  name: minimal-ingress                        # Nombre del Ingress.
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /  # Anotación específica para NGINX que reescribe la URL destino para que coincida con la raíz.
+spec:
+  ingressClassName: nginx-example              # Nombre de la clase de Ingress que define qué controlador manejará este Ingress.
+  rules:                                       # Reglas que definen cómo se enruta el tráfico externo a los servicios internos.
+  - http:                                      # Define que la regla se aplica al tráfico HTTP.
+      paths:
+      - path: /                                # Ruta del URL que se desea exponer (en este caso, /testpath).
+        pathType: Prefix                       # Tipo de coincidencia para la ruta; Prefix significa que cualquier ruta que comience con /testpath coincidirá.
+        backend:                               # Define el servicio backend que manejará el tráfico que coincide con esta regla.
+          service:
+            name: test                         # Nombre del servicio al que se dirigirá el tráfico.
+            port:
+              number: 80                       # Puerto en el servicio al que se redirigirá el tráfico.
+---
+## CONFIGMAP
+apiVersion: v1                                 # Versión de la API de Kubernetes utilizada para ConfigMap.
+kind: ConfigMap                                # Tipo de recurso; ConfigMap se utiliza para almacenar datos de configuración no confidenciales en pares clave-valor.
+metadata:
+  name: game-demo                              # Nombre del ConfigMap.
+data:                                          # La sección `data` contiene los datos de configuración en forma de pares clave-valor.
+  # property-like keys; cada clave se asigna a un valor simple
+  player_initial_lives: "3"                    # Clave que define la cantidad inicial de vidas para el jugador.
+  ui_properties_file_name: "user-interface.properties"  # Clave que define el nombre del archivo de propiedades de la interfaz de usuario.
+
+  # file-like keys; claves que contienen múltiples líneas de texto
+  game.properties: |                           # Clave que contiene varias propiedades del juego.
+    enemy.types=aliens,monsters                # Define los tipos de enemigos en el juego.
+    player.maximum-lives=5                     # Define la cantidad máxima de vidas para el jugador.
+  user-interface.properties: |                 # Clave que contiene propiedades de la interfaz de usuario.
+    color.good=purple                          # Define el color para el estado "bueno".
+    color.bad=yellow                           # Define el color para el estado "malo".
+    allow.textmode=true                        # Define si se permite el modo de texto en la interfaz de usuario.
