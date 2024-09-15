@@ -5,10 +5,11 @@ metadata:
   labels:
     app: uptime-service
 spec:
+  #type: NodePort
   ports:
   - port: 3001
     name: uptime-port
-  #clusterIP: None
+    #targetPort: 3001 # No es necesario especificarlo si se usa un ingress, si usas NodePort si
   selector:
     app: uptime-app
 ---
@@ -19,7 +20,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: uptime-app 
+      app: uptime-app
   serviceName: "uptime-service"
   replicas: 1
   template:

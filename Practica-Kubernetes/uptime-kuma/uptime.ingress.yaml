@@ -3,11 +3,11 @@ kind: Ingress
 metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    kubernetes.io/ingress.class: public # Cambiar a nginx para Rancher
+    kubernetes.io/ingress.class: nginx # Cambiar a public si accedes a traves de una instancia con microk8s local
   name: uptime-ingress
 spec:
   rules:
-  #- host: # Aca cambiar host por dominio - UM -> amontana.my.kube.um.edu.ar
+  - host: localhost # Aca cambiar host por dominio - UM -> amontana.my.kube.um.edu.ar
   - http:
       paths:
       - backend:
