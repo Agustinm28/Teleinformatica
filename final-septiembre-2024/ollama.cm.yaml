@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: open-webui-config
+data:
+  OLLAMA_BASE_URL: "http://10.201.2.136:8080"
+  OPEN_WEBUI_PORT: "3000"

@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webui-service
+  labels:
+    app: webui-service
+spec:
+  ports:
+  - port: 3000
+    targetPort: 8080
+  selector:
+    app: open-webui
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ollama-app
+spec:
+  selector:
+    matchLabels:
+      app: ollama-app
+  serviceName: "webui-service"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ollama-app
+    spec:
+      containers:
+      - name: ollama-app
+        image: ollama/ollama:latest
+        volumeMounts:
+        - name: ollama-data
+          mountPath: /root/.ollama
+      - name: open-webui
+        image: ghcr.io/open-webui/open-webui:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: WEBUI_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: webui-secret
+              key: WEBUI_SECRET_KEY
+        - name: OPEN_WEBUI_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: open-webui-config
+              key: OPEN_WEBUI_PORT
+        - name: OLLAMA_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: open-webui-config
+              key: OLLAMA_BASE_URL
+        volumeMounts:
+        - name: webui-data
+          mountPath: /app/backend/data
+  volumeClaimTemplates:
+  - metadata:
+      name: ollama-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+  - metadata:
+      name: webui-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi

@@ -19,7 +19,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: mstream-app 
+      app: mstream-app
   serviceName: "mstream-service"
   replicas: 1
   template:

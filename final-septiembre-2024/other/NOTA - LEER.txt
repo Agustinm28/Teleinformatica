@@ -1,0 +1,5 @@
+Si miras el repositorio de la aplicación, ves que hay dos formas de levantarlo, o definiendo en el yaml un contenedor para ollama y otro para la webui, o solo levantando la webui y comunicarla con un ollama en un servidor externo. 
+
+En esta carpeta están los yaml de como intente encararlo en un principio antes de que nos pasaran una url a un servicio de ollama ya funcionando (que es como esta resuelto en la carpeta raiz), lo dejo por las dudas que quieran chusmear pero no los complete.
+
+
